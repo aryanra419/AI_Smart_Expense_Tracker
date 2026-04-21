@@ -2,17 +2,23 @@
 
 A premium, full-stack financial management application with real-time spending intelligence, budget analytics, and behavioral insights.
 
+## Project Structure
+
+- `frontend/`: React + Vite application.
+- `backend/`: Flask + SQLite backend.
+
 ## Development Setup
 
 ### 1. Frontend (React + Vite)
 ```bash
+cd frontend
 npm install
 npm run dev
 ```
 
 ### 2. Backend (Flask + SQLite)
 ```bash
-cd server
+cd backend
 pip install -r requirements.txt
 python app.py
 ```
@@ -25,17 +31,26 @@ This application is configured as a "Unified Monolith" for easy deployment. The 
 1. Ensure you have Node.js and Python installed.
 2. Build the frontend:
    ```bash
+   cd frontend
+   npm install
    npm run build
    ```
 3. Install Python dependencies:
    ```bash
-   pip install -r server/requirements.txt
+   cd backend
+   pip install -r requirements.txt
    ```
 4. Start the application:
    ```bash
-   python server/app.py
+   # From the root directory:
+   python backend/app.py
+   
+   # OR use the helper script in backend:
+   # python backend/start_prod.py
+   
    # OR on Linux/Unix with gunicorn:
-   # gunicorn --chdir server app:app --bind 0.0.0.0:5000
+   # cd backend
+   # gunicorn app:app --bind 0.0.0.0:5000
    ```
 5. Access your app at `http://your-server-ip:5000`.
 

@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { autoCategorize } from '../utils/categorize';
 import { generateInsights } from '../utils/insights';
+import { getPredictionData } from '../utils/predictions';
+import { detectAnomalies, isTransactionAnomalous } from '../utils/anomalyDetector';
+import { calculateFinancialScore } from '../utils/financialScore';
 
 const ExpenseContext = createContext();
 
@@ -11,6 +14,7 @@ export const ExpenseProvider = ({ children }) => {
   const [budget, setBudget] = useState(5000);
   const [categoryBudgets, setCategoryBudgets] = useState({ Food: 5000, Transport: 3000, Shopping: 5000, Entertainment: 2500, Health: 2000 });
   const [insights, setInsights] = useState([]);
+  const [pendingAnomaly, setPendingAnomaly] = useState(null);
   
   const currencySymbol = '₹';
   const API_URL = import.meta.env.VITE_API_URL || '/api';
@@ -81,6 +85,12 @@ export const ExpenseProvider = ({ children }) => {
       category: category,
       date: new Date().toISOString()
     };
+
+    // 🚨 Anomaly Detection — check before saving
+    const anomalyResult = isTransactionAnomalous(newExpense, expenses);
+    if (anomalyResult) {
+      setPendingAnomaly({ expense: newExpense, anomaly: anomalyResult });
+    }
 
     try {
       const res = await fetch(`${API_URL}/expenses`, {
@@ -224,12 +234,20 @@ export const ExpenseProvider = ({ children }) => {
 
   const budgetUsage = (currentMonthAmount / budget) * 100;
 
+  // ─── AI Feature Data ────────────────────────────────────────────────────────
+  const predictionData = getPredictionData(expenses, budget);
+  const anomalies = detectAnomalies(expenses);
+  const financialScore = calculateFinancialScore(expenses, budget, categoryBudgets);
+
   return (
     <ExpenseContext.Provider value={{ 
       expenses, insights, totalAmount, currentMonthAmount, currentMonthExpenses, 
       dashboardData, monthlyData, weeklyData,
       budget, categoryBudgets, budgetUsage, currencySymbol, formatCurrency,
-      behavioralData: getBehavioralData(), addExpense, deleteExpense, updateBudget 
+      behavioralData: getBehavioralData(), addExpense, deleteExpense, updateBudget,
+      // AI Features
+      predictionData, anomalies, financialScore,
+      pendingAnomaly, clearPendingAnomaly: () => setPendingAnomaly(null)
     }}>
       {children}
     </ExpenseContext.Provider>

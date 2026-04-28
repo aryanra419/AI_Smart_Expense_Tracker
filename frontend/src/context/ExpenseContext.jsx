@@ -40,7 +40,7 @@ export const ExpenseProvider = ({ children }) => {
     // Initial fetch from Python Backend
     const fetchData = async () => {
       try {
-        const res = await fetch(`${API_URL}/data`);
+        const res = await fetch(`${API_URL}/api/data`);
         if (!res.ok) throw new Error("Backend not reachable");
         const data = await res.json();
         setExpenses(data.expenses || []);
@@ -93,7 +93,7 @@ export const ExpenseProvider = ({ children }) => {
     }
 
     try {
-      const res = await fetch(`${API_URL}/expenses`, {
+      const res = await fetch(`${API_URL}/api/expenses`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newExpense)
@@ -109,7 +109,7 @@ export const ExpenseProvider = ({ children }) => {
 
   const deleteExpense = async (id) => {
     try {
-      await fetch(`${API_URL}/expenses/${id}`, { method: 'DELETE' });
+      await fetch(`${API_URL}/api/expenses/${id}`, { method: 'DELETE' });
       setExpenses(prev => prev.filter(exp => exp.id !== id));
     } catch (err) {
       console.error("Could not delete from backend", err);
@@ -130,7 +130,7 @@ export const ExpenseProvider = ({ children }) => {
     }
 
     try {
-      await fetch(`${API_URL}/settings`, {
+      await fetch(`${API_URL}/api/settings`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ budget: newBudget, categoryBudgets: newCategoryBudgets })

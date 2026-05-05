@@ -17,7 +17,7 @@ export const ExpenseProvider = ({ children }) => {
   const [pendingAnomaly, setPendingAnomaly] = useState(null);
   
   const currencySymbol = '₹';
-  const API_URL = import.meta.env.VITE_API_URL || '/api';
+  const API_URL = import.meta.env.VITE_API_URL || 'https://ai-smart-expense-tracker-1.onrender.com';
 
   const formatCurrency = (val) => {
     return new Intl.NumberFormat('en-IN', {

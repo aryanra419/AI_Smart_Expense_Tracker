@@ -7,9 +7,18 @@ from datetime import datetime
 
 # Configure Flask to serve the React 'dist' folder
 app = Flask(__name__, static_folder='../dist', static_url_path='/')
-CORS(app) # Enable CORS for development flexibility
 
-DB_FILE = os.path.join(os.path.dirname(__file__), 'expenses.db')
+# Setup allowed origins for production
+ALLOWED_ORIGINS = [
+    "https://arcodes.online",
+    "https://www.arcodes.online",
+    "https://ai-smart-expense-tracker-drab.vercel.app",
+    "http://localhost:5173"
+]
+CORS(app, origins=ALLOWED_ORIGINS)
+
+# On Render free tier, SQLite is ephemeral. Using environment variables allows mapping a persistent volume if available.
+DB_FILE = os.environ.get('DATABASE_PATH', os.path.join(os.path.dirname(__file__), 'expenses.db'))
 
 # Serve React Frontend
 @app.route('/', defaults={'path': ''})

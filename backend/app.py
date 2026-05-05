@@ -76,6 +76,9 @@ def init_db():
     conn.commit()
     conn.close()
 
+# Initialize the database immediately when the module is loaded (needed for gunicorn)
+init_db()
+
 @app.route('/api/data', methods=['GET'])
 def get_data():
     conn = get_db_connection()
